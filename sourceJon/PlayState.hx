@@ -64,6 +64,10 @@ class PlayState extends MusicBeatState
 	public static var goods:Int = 0;
 	public static var sicks:Int = 0;
 
+	public static var botPlay:Bool = false;
+	public var botplaySine:Float = 0;
+	public var botplayTxt:FlxText;
+
 	public static var songPosBG:FlxSprite;
 	public static var songPosBar:FlxBar;
 
@@ -206,6 +210,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+		botPlay = FlxG.save.data.botplay;
 
 		sicks = 0;
 		bads = 0;
@@ -1086,6 +1091,14 @@ class PlayState extends MusicBeatState
 			scoreTxt.x += 300;
 		add(scoreTxt);
 
+		botplayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0,
+		"BOTPLAY", 20);
+		botplayTxt.setFormat((SONG.song.toLowerCase() == "overdrive") ? Paths.font("ariblk.ttf") : font, 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 3;
+		botplayTxt.visible = botPlay;
+		add(botplayTxt);
+
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
 		replayTxt.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		replayTxt.scrollFactor.set();
@@ -1109,6 +1122,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		if (FlxG.save.data.songPosition)
 		{
@@ -2514,7 +2528,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (health <= 0)
+		if (health <= 0 && !botPlay)
 		{
 			boyfriend.stunned = true;
 
@@ -2606,7 +2620,7 @@ class PlayState extends MusicBeatState
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 					
 					/*if(SONG.song.toLowerCase()=='onslaught' && IsNoteSpinning){
-						if(daNote.mustPress){
+						if(daNote.mustPress && botPlay){
 							daNote.angle = daNote.angle + 1;
 						}
 					}*/
@@ -2641,7 +2655,7 @@ class PlayState extends MusicBeatState
 			}
 
 
-		if (!inCutscene)
+		if (!inCutscene && !botPlay)
 			keyShit();
 
 
@@ -2659,7 +2673,7 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		if (SONG.validScore)
+		if (SONG.validScore && !botPlay)
 		{
 			#if !switch
 			Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
@@ -2709,13 +2723,13 @@ class PlayState extends MusicBeatState
 
 					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
-					if (SONG.validScore)
+					if (SONG.validScore && !botPlay)
 					{
 						NGio.unlockMedal(60961);
 						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 					}
 
-					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+					if (!botPlay) FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 					FlxG.save.flush();
 				}
 				else
@@ -2798,7 +2812,8 @@ class PlayState extends MusicBeatState
 			totalNotesHit += wife;
 
 			var daRating = daNote.rating;
-
+                        
+		if (!botPlay) {
 			switch(daRating)
 			{
 				case 'shit':
@@ -2826,8 +2841,9 @@ class PlayState extends MusicBeatState
 						health += 0.1;
 					sicks++;
 			}
+		}
 
-			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
+		// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
 			if (daRating != 'shit' || daRating != 'bad')
 				{
@@ -3610,6 +3626,7 @@ class PlayState extends MusicBeatState
 					}
 		
 					if (!loadRep)
+					   if(botPlay) {
 						playerStrums.forEach(function(spr:FlxSprite)
 						{
 							if (Math.abs(note.noteData) == spr.ID)
@@ -3617,7 +3634,8 @@ class PlayState extends MusicBeatState
 								spr.animation.play('confirm', true);
 							}
 						});
-		
+					}
+
 					note.wasGoodHit = true;
 					vocals.volume = 1;
 		

@@ -69,6 +69,18 @@ class Option
 	public function right():Bool { return throw "stub!"; }
 }
 
+class BotPlayOption extends Option
+{
+	public function new(controls:Controls)
+	{
+		super();
+		this.controls = controls;
+	}
+	private override function updateDisplay():String
+	{
+		return "botplay website " + (!FlxG.save.data.botplay ? "on" : "off");
+	}
+}
 class DFJKOption extends Option
 {
 	private var controls:Controls;

@@ -74,7 +74,7 @@ class BotPlayOption extends Option
 	public function new(controls:Controls)
 	{
 		super();
-		this.controls = controls;
+		description = desc;
 	}
 	private override function updateDisplay():String
 	{

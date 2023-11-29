@@ -43,7 +43,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-import Paths.font;
+import Paths;
 
 #if windows
 import Discord.DiscordClient;

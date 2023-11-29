@@ -71,7 +71,7 @@ class Option
 
 class BotPlayOption extends Option
 {
-	public function new(controls:Controls)
+	public function new(desc:String)
 	{
 		super();
 		description = desc;
